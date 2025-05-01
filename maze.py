@@ -83,22 +83,58 @@ class MazeBoard:
 
             self.recursiveGen(step[0] + x,step[1] + y,delay) #repeats for stepped to neighbor
             
+class player: #class for the player object
+    def __init__(self, b): #sets player
+        self.xCoord = 0
+        self.yCoord = 0
+        self.maze = b
+        pygame.draw.rect(self.maze.screen, (255, 0, 0), pygame.Rect(x_offset+20*self.xCoord + 2, y_offset+20*self.yCoord + 2, 16, 16))
 
+    def move(self, direction): #moves player
+        tempX = self.xCoord #temp coords used for screen update
+        tempY = self.yCoord
+        move = False
+        if (direction == pygame.K_w) and ((0,-1) in self.maze.board[tempY][tempX].posMoves()): #when 'w' key pressed move up
+            self.yCoord += -1
+            move = True
+        elif (direction == pygame.K_a) and ((-1, 0) in self.maze.board[tempY][tempX].posMoves()): #when 'a' key pressed move left
+            self.xCoord += -1
+            move = True
+        elif (direction == pygame.K_s) and ((0, 1) in self.maze.board[tempY][tempX].posMoves()): #when 's' key pressed move down
+            self.yCoord += 1
+            move = True
+        elif (direction == pygame.K_d) and ((1, 0) in self.maze.board[tempY][tempX].posMoves()): #when 'd' key pressed move right
+            self.xCoord += 1
+            move = True
+        else:
+            move = False
 
+        if move: #checks if a move was possible and completed and update rectangle location
+            pygame.draw.rect(self.maze.screen, (255, 255, 255), pygame.Rect(x_offset+20*tempX + 2, y_offset+20*tempY + 2, 16, 16))
+            pygame.draw.rect(self.maze.screen, (255, 0, 0), pygame.Rect(x_offset+20*self.xCoord + 2, y_offset+20*self.yCoord + 2, 16, 16))
+
+game = True
 height = 27
 width = 36
 delay = 0.01
-maze = MazeBoard(width,height)
-time.sleep(1)
-maze.recursiveGen(0,0,delay) #starts maze generation
-pygame.draw.rect(maze.screen,(0,255,0),pygame.Rect(x_offset+20*(width-1) + 2,y_offset+20*(height-1) + 2, 16, 16))
-
-run = True     
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+while game: #while loop for infinite games to be played
+    maze = MazeBoard(width,height)
+    time.sleep(1)
+    maze.recursiveGen(random.randint(0, width), random.randint(0, height),delay) #starts maze generation
+    pygame.draw.rect(maze.screen,(0,255,0),pygame.Rect(x_offset+20*(width-1) + 2,y_offset+20*(height-1) + 2, 16, 16))
+    player1 = player(maze)
+    run = True     
+    while run: #while loop for events in each individual maze
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: #shutdown the game when window is closed
+                run = False
+                game = False
+        
+            if event.type == pygame.KEYDOWN: #register keystroke
+                player1.move(event.key)
+        
+        if player1.xCoord == 35 and player1.yCoord == 26: #check for player reaching end of the maze
             run = False
-
-    pygame.display.update()
+        pygame.display.update()
 
 pygame.quit()
