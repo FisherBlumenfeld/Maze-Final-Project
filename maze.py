@@ -20,7 +20,7 @@ class MazeBlock:
 
         
 class MazeBoard:
-    def __init__ (self, width, height):
+    def __init__ (self, width, height, wH, wW):
         self.board = []
         self.height = height
         self.width = width
@@ -31,7 +31,7 @@ class MazeBoard:
         
         #pygame stuff
         pygame.init()
-        self.screen = pygame.display.set_mode((800,600))
+        self.screen = pygame.display.set_mode((wW,wH))
         pygame.display.set_caption("Maze")
         for y in range(0,self.height):
             for x in range(0,self.width):
@@ -114,13 +114,36 @@ class player: #class for the player object
             pygame.draw.rect(self.maze.screen, (255, 0, 0), pygame.Rect(x_offset+20*self.xCoord + 2, y_offset+20*self.yCoord + 2, 16, 16))
 
 game = True
-height = 27
-width = 36
+height = 0
+width = 0
+windowHeight = 0
+windowWidth = 0
 delay = 0.01
+
+difficulty = input("Choose a difficulty (demo, E, M, or H): ")
+while difficulty not in ["E", "M", "H","demo"]:
+    difficulty = input("Choose a difficulty (demo, E, M, or H): ")
+if difficulty == "E":
+    height = 9
+    width = 12
+elif difficulty == "M":
+    height = 18
+    width = 24
+elif difficulty == "H":
+    height = 27
+    width = 36
+elif difficulty == "demo":
+    height = 18
+    width = 24
+    delay = 0.2
+
+windowHeight = 2*y_offset + 20*height
+windowWidth = 2*x_offset + 20*width
+
 while game: #while loop for infinite games to be played
-    maze = MazeBoard(width,height)
+    maze = MazeBoard(width,height,windowHeight,windowWidth)
     time.sleep(1)
-    maze.recursiveGen(random.randint(0, width), random.randint(0, height),delay) #starts maze generation
+    maze.recursiveGen(random.randint(0, width-1), random.randint(0, height-1),delay) #starts maze generation
     pygame.draw.rect(maze.screen,(0,255,0),pygame.Rect(x_offset+20*(width-1) + 2,y_offset+20*(height-1) + 2, 16, 16))
     player1 = player(maze)
     run = True     
@@ -133,7 +156,7 @@ while game: #while loop for infinite games to be played
             if event.type == pygame.KEYDOWN: #register keystroke
                 player1.move(event.key)
         
-        if player1.xCoord == 35 and player1.yCoord == 26: #check for player reaching end of the maze
+        if player1.xCoord == width-1 and player1.yCoord == height-1: #check for player reaching end of the maze
             run = False
         pygame.display.update()
 
