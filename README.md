@@ -16,5 +16,6 @@ inputs:
 Choose a difficulty (demo, E, M, or H): demo
 
 outputs:
-opens pygame window, use W/A/S/D to move
+opens pygame window, generates maze of selected difficulty [use W/A/S/D to move]
+
 
